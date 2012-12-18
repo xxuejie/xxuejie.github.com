@@ -108,6 +108,13 @@ h1 {
 	padding: 0.67em 0 1em 15%;
 }
 
+#footer {
+  background-color: #FAF9F8;
+  margin: 0 15%;
+  padding: 0.67em 0 1em 15%;
+  border-top: 1px solid #EEE;
+}
+
 #header a {
   color: #3B3A40;
   text-decoration: none;
