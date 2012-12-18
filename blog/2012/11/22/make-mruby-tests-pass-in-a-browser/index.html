@@ -1,0 +1,325 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Make mruby tests pass in a browser - Xuejie Xiao's playground</title>
+	<meta name="author" content="Xuejie Xiao">
+
+	
+	<meta name="description" content="With my Hadoop paper submitted last Friday, I can spend more time playing with mruby. Now after several days&#8217; hacking, I finally manage to make &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Xuejie Xiao's playground" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Xuejie Xiao's playground</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:xxuejie.github.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		<a class="google" href="https://plus.google.com/104023845771520636265?rel=author" title="Google+">Google+</a>
+		
+		
+		<a class="twitter" href="http://twitter.com/defmacro" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/xxuejie" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:xxuejie.github.com">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h1 class="title">Make Mruby Tests Pass in a Browser</h1>
+	<div class="entry-content"><p>With my Hadoop paper submitted last Friday, I can spend more time playing with mruby. Now after several days&#8217; hacking, I finally manage to make all mruby tests pass in a browser or in node.js.</p>
+
+<div>
+  <pre><code class='bash'>$ make test
+make[2]: Nothing to be done for `all'.
+make[2]: Nothing to be done for `all'.
+make[2]: Nothing to be done for `all'.
+make[2]: Nothing to be done for `all'.
+Running mruby test in Node.js!
+node ./build/mruby-test.js
+mrbtest - Embeddable Ruby Test
+
+This is a very early version, please test and report errors.
+Thanks :)
+
+......................................................................................
+......................................................................................
+......................................................................................
+......................................................................................
+......................................................................................
+.............................................................
+Total: 491
+   OK: 491
+   KO: 0
+Crash: 0
+ Time: 1.999 seconds</code></pre>
+</div>
+
+
+<p>Now it&#8217;s time to keep a note on how to make these tests passed.</p>
+
+<p>As this <a href="https://github.com/kripken/emscripten/issues/705">Issue</a> is resolved(Thanks to Alon Zakai for his super fast commit to fix this!), the mruby source code can be compiled using <code>emcc</code> successfully, the sample <code>main.c</code> file also works. But there are still 5 tests left that are not passed: 2 of them failed, while the other 3 caused node.js to crash. These 5 tests are:</p>
+
+<ul>
+<li>Tests for <code>erf</code> and <code>erfc</code> functions in <code>math.rb</code></li>
+<li><code>Float#round [15.2.9.3.12]</code> in <code>float.rb</code></li>
+<li><code>String#to_f [15.2.10.5.39]</code> in <code>string.rb</code></li>
+<li><code>Exception 14</code> in <code>exception.rb</code></li>
+<li><code>Proc.new [15.2.17.3.1]</code> in <code>proc.rb</code></li>
+</ul>
+
+
+<p>To be honest, the result is quite good, since only 5 of the 489 tests got problems. I guess <code>emscripten</code> really has reached a pretty mature status thanks to Alon. Most of the fixes here are resolved from commits to <code>mruby</code> or <code>emscripten</code> directly. However, there are also annoying ones. Anyway, I will explain how to make each of them pass.</p>
+
+<h2><code>erf</code> and <code>erfc</code> functions</h2>
+
+<p>Honestly, this is the first time that I heard about these two functions. They reside in the <code>math.h</code> header file of standard C library. The <code>erf</code> function is used to calculate the error function of a value <code>x</code>. While the &#8216;erfc&#8217; function calculates the complementary error function of <code>x</code>. <code>emscripten</code> does not come with an implementation for this function. However, there is an implementation in <code>math.c</code> of <code>mruby</code> for MSVC, which does not provide <code>erf/erfc</code> functions. It was originally take from <a href="http://www.digitalmars.com/archives/cplusplus/3634.html">here</a>:</p>
+
+<div>
+  <pre><code class='c'>double
+erf(double x)
+{
+  static const double two_sqrtpi =  1.128379167095512574;
+  double sum  = x;
+  double term = x;
+  double xsqr = x*x;
+  int j= 1;
+  if (fabs(x) &gt; 2.2) {
+    return 1.0 - erfc(x);
+  }
+  do {
+    term *= xsqr/j;
+    sum  -= term/(2*j+1);
+    ++j;
+    term *= xsqr/j;
+    sum  += term/(2*j+1);
+    ++j;
+  } while (fabs(term/sum) &gt; MATH_TOLERANCE);
+  return two_sqrtpi*sum;
+}</code></pre>
+</div>
+
+
+<p>What&#8217;s worth noting is that the original <code>mruby</code> implementation contains a bug which will give wrong results for negative values. The original post from digitalmars also has a fix for this problem. It was just the case that the original commiter uses the earlier version without the fix. Hence a simple <a href="https://github.com/mruby/mruby/commit/f7dd27a92827af91aa52c78bfbf96d5f7e73c4bd">commit</a> to the <code>mruby</code> project solved this problem. A similar <a href="https://github.com/kripken/emscripten/commit/9be35831f0741070e495622e6c7ba51fbbb6475c">version</a> in JavaScript could also be implemented, the <code>erf/erfc</code> test would then pass.</p>
+
+<h2><code>Fload#round</code> test</h2>
+
+<p>This is an interesting and easy one. The test code resides at <a href="https://github.com/mruby/mruby/blob/master/test/t/float.rb#L96">here</a>. Actually all the round tests give the correct result, what went the wrong is that <code>==</code> is used to test equality for two floating point values. A small <a href="https://github.com/mruby/mruby/commit/a9c8ae49ebe1c54b93dcffa46370d4099e0c7ea3">commit</a> fixes this, easy one.</p>
+
+<h2><code>String#to_f</code> test</h2>
+
+<p>This is also related floating point value. The code is at <a href="https://github.com/mruby/mruby/blob/master/test/t/string.rb#L325">here</a>. <code>b</code> should be assigned to <code>123456789.0</code>, when using <code>check_float</code> to compare <code>b</code> with <code>123456789.0</code>, they should be treated as equality. Funny thing is that node.js would give the result of <code>1.4901161193848e-08</code> as the difference between the two values, while <code>check_float</code> would only consider two values to be the same if they are within <code>1E-12</code>.</p>
+
+<p>Simply changing Line #328 to <code>123456789</code> instead of <code>123456789.0</code> would give the correct result, but this is a very bad fix for this problem and does not really solve it. Basically there may be two reasons:</p>
+
+<ol>
+<li>Somewhere in the generated JavaScript code of <code>emscripten</code>, the code does not treat the floating point value well.</li>
+<li><code>v8</code> does not provide that many precisions for floating point value.</li>
+</ol>
+
+
+<p>It is still unknown which is the cause for this problem. What I choose to do now is to let <code>mruby</code> use float instead of double. When using float, <code>check_float</code> would accept two values within <code>1E-5</code>, for which the current result of <code>1.4901161193848e-08</code> will be enough. Anyway, I will come back to this later, maybe a dig into the <code>v8</code> issue list can bring some insight into this.</p>
+
+<h2><code>Exception 14</code> and <code>Proc.new [15.2.17.3.1]</code></h2>
+
+<p>Both the <a href="https://github.com/mruby/mruby/blob/master/test/t/exception.rb#L261">exception</a> and <a href="https://github.com/mruby/mruby/blob/master/test/t/proc.rb#L12">proc</a> tests crash <code>node.js</code>, and they both use a <code>begin ... rescue ... end</code> statement with a method call in the <code>begin</code> clause. A simple guess is that they are due to the same reason.</p>
+
+<p>I spent a whole day debugging this problem by inserting debug statements in mruby source code, reading generated logs as well as JavaScript source code written in assembly style. The <code>LABEL_DEBUG</code> option in <code>emscripten</code> proves to be a huge help here(thanks again, Alon!). Finally the problem turns out to be the need for stack manipulation setjmp/longjmp. I prepared a <a href="https://gist.github.com/4128331">gist</a> describing this problem:</p>
+
+<div>
+  <pre><code class='c'>#include &lt;setjmp.h&gt;
+#include &lt;stdio.h&gt;
+
+typedef struct {
+  jmp_buf* jmp;
+} jmp_state;
+
+void stack_manipulate_func(jmp_state* s, int level) {
+  jmp_buf buf;
+
+  printf(&quot;Entering stack_manipulate_func, level: %d\n&quot;, level);
+
+  if (level == 0) {
+    s-&gt;jmp = &amp;buf;
+    if (setjmp(*(s-&gt;jmp)) == 0) {
+      printf(&quot;Setjmp normal execution path, level: %d\n&quot;, level);
+      stack_manipulate_func(s, level + 1);
+    } else {
+      printf(&quot;Setjmp error execution path, level: %d\n&quot;, level);
+    }
+  } else {
+    printf(&quot;Perform longjmp at level %d\n&quot;, level);
+    longjmp(*(s-&gt;jmp), 1);
+  }
+
+  printf(&quot;Exiting stack_manipulate_func, level: %d\n&quot;, level);
+}
+
+int main(int argc, char *argv[]) {
+  jmp_state s;
+  s.jmp = NULL;
+
+  stack_manipulate_func(&amp;s, 0);
+
+  return 0;
+}</code></pre>
+</div>
+
+
+<p>The original gist also comes with logs running this natively or via <code>emscripten</code>. With a stack manipulating setjmp/longjmp, the longjmp would erase the stack for level 1 calling of <code>stack_manipulate_func</code>. The program would only call the exiting printf once. However, with the current implementation of setjmp/longjmp in <code>emscripten</code>, the stack is not changed, the exiting printf will be call by both the level 0 and level 1 version of <code>stack_manipulate_func</code>.</p>
+
+<p>I don&#8217;t think it is very likely that we will have a stack manipulation setjmp/longjmp in JavaScript. So the use of setjmp/longjmp needs to be removed from <code>mruby</code>. But wait, does this sound similar? Didn&#8217;t I just come up with a solution a few days earlier? Well, it is just in my first <a href="http://qiezi.me/blog/2012/11/07/running-mruby-in-a-browser/">post</a> on <code>mruby</code>. I created a <a href="https://github.com/xxuejie/mruby-browser/blob/19365625b1a2e215af69e8196053a17a33bebfed/patches/01-mruby-use-exception.patch">patch</a> to use C++ exception instead of setjmp/longjmp and then found out that our simple <code>main.c</code> file does not need this to run. Well, now we do. So I have to bring <a href="https://github.com/xxuejie/mruby-browser/blob/4a8e43d6ab9fd4c0d86e140f9db316b342c891df/patches/01-use-cpp-exception.patch">it</a> back. This is really bad news for a pathetic C99 lover to find that the dependency for a C++ compiler returns-_-</p>
+
+<p>Quick Update: Actually Alon <a href="https://groups.google.com/forum/?fromgroups=#!topic/emscripten-discuss/Xbu48Tvd2mk">confirms</a> that this is just a bug and it is fixed. So maybe we can still have a C99 solution on this problem. Interesting, I will take a look at this later. I really feel sick about using a C++ compiler, that may bring a lot of evil stuff when working on the later parts involving more C code, such as C function calling interface.</p>
+
+<p>Anyway, now all the tests have passed. Not only in node.js but also in browsers. However, the time to run tests differ greatly:</p>
+
+<ul>
+<li>Chrome 23: 1.682s</li>
+<li>Firefox Aurora 18: 5.294s</li>
+<li>Safari 6: 0.394s</li>
+</ul>
+
+
+<p>This is interesting. Safari is so fast that one can think something went wrong for the other two.</p>
+
+<p>At this time, I believe the testing for mruby in JavaScript has finished. I will spend some time trying to create a irb for the browser and see if I can get it on repl.it. After that I can finally spend the time on C function calling. I wish it could be more fun than debugging the generated JavaScript code-_-</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-22T12:22:00-05:00" pubdate data-updated="true">Nov 22<span>nd</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/javascript/'>JavaScript</a>, <a class='category' href='/blog/categories/mruby/'>mruby</a>
+
+
+</div>
+	
+</div></article>
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2012 -
+
+    Xuejie Xiao
+
+<span class="credit">
+  - Powerd by <a href="http://ocropress.org">Octopress</a>
+  - Theme
+  <a href="http://zespia.tw/Octopress-Theme-Slash/">Slash</a>
+  created by
+  <a href="http://zespia.tw/">Zespia</a>
+</span>
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'qiezi';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://xxuejie.github.com/blog/2012/11/22/make-mruby-tests-pass-in-a-browser/';
+        var disqus_url = 'http://xxuejie.github.com/blog/2012/11/22/make-mruby-tests-pass-in-a-browser/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-35905691-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+</body>
+</html>
