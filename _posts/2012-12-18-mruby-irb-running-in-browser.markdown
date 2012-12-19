@@ -5,7 +5,7 @@ date: 2012-12-18 21:57
 comments: true
 categories: mruby JavaScript
 ---
-After some time's work, now I finally got a working irb for mruby. I'm such a lazy guy so you may already seen the demo from [this](https://twitter.com/kripken/status/281199267350212609), [this](https://twitter.com/yukihiro_matz/status/281187882213982208) or [this](https://twitter.com/defmacro/status/281150651319332865). Anyway, for those of you who didn't see it, the demo is at [here](qiezi.me/projects/mruby-web-irb/mruby.html).
+After some time's work, now I finally got a working irb for mruby. I'm such a lazy guy so you may already seen the demo from [this](https://twitter.com/kripken/status/281199267350212609), [this](https://twitter.com/yukihiro_matz/status/281187882213982208) or [this](https://twitter.com/defmacro/status/281150651319332865). Anyway, for those of you who didn't see it, the demo is at [here](/projects/mruby-web-irb/mruby.html).
 
 With all the work in [webruby](https://github.com/xxuejie/webruby), actually it is not so hard to implement this. However, there are still two things I want to write down here as notes.
 
