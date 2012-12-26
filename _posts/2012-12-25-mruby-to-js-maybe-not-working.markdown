@@ -20,3 +20,5 @@ I could build a `mrb_value`-like type to use in `va_list`-like structure when ha
 Or maybe I can also pass in an array of strings to the JavaScript side specifying the types of each arguments. While this array could be generated automatically, the question is still there: does it worth the cost?
 
 Maybe my original plan on an OpenGL ES 2.0 API is right-_- Anyway, I will update here if I have more results.
+
+**Update**: Well, I manage to succeed in building an interface using neither of the methods above! I just pass the pointer(array) of values to the JS side, and then let the JS code call "back" to the C code to process the arguments one-by-one. The cost should not be more than simply looping through the arguments. The internal structure of mruby calling stack helps a lot in this implementation! If you are interested, feel free to check out the [code](https://github.com/xxuejie/mruby-js), specifically this [commit](https://github.com/xxuejie/mruby-js/commit/60016e969ed767540e3dad4dec7d2e1622c39c73).
