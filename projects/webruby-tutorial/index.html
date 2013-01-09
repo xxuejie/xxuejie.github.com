@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Webruby tutorial</title>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="mruby.opt.js"></script>
+    <!-- Google Analytic script, this is not include in the tutorial repository -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-35905691-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+      })();
+    </script>
+  </head>
+  <body>
+    <h1>This is a skeleton for Webruby tutorial!</h1>
+    <div id="container"></div>
+    <script>
+      /* Inline source code, in practice you may want to get this from
+       * an XMLHttpRequest.
+       */
+      var src = "MrubyJs.get_root_object.call('$', '#container')" +
+        ".call('append', '<p>This is inserted in Webruby using " +
+        "WEBRUBY.run_source()!</p>')";
+
+      $(document).ready(function() {
+        var mrb = WEBRUBY.open();
+
+        /* Runs embedded source code in mruby.js file. */
+        WEBRUBY.run(mrb);
+
+        /* Parses and executes Ruby code on the fly. */
+        WEBRUBY.run_source(mrb, src);
+
+        WEBRUBY.close(mrb);
+      });
+    </script>
+  </body>
+</html>
