@@ -5,6 +5,9 @@ date: 2013-01-09 12:29
 comments: true
 categories: webruby mruby JavaScript
 ---
+
+**Update**: I've changed the API a little bit. Please check this [post](/2013/01/15/o2-mode/) for the latest API. I decided to keep this post unchanged so you can see both versions. Feel free to leave a comment if you belive the old one is better:)
+
 Lately some people have been asking me to write a tutorial on how to use Webruby. Sorry, guys. I was having a lot of fun writing this stuff but I forgot to bring these fun to you. Now the tutorial on Webruby is finally here:)
 
 The final result of this tutorial looks like this:
