@@ -49,6 +49,8 @@ $ brew install llvm --with-clang
 
 Note this is the Mac-with-homebrew way of installing LLVM. If you know how to install LLVM 3.2 on Linux/Windows, I will really appreciate it if you can comment below, I will update this post accordingly.
 
+**Update**: Thanks to [Reed](https://github.com/reedlaw) for pointing out, actually you can just go to <http://llvm.org/releases/download.html>, download and extract the pre-compiled binary for your platform, change the value of `LLVM_ROOT` in your `~/.emscripten` file to match the bin directory of your LLVM installation. You are then good to go!
+
 This is almost it! I guess I may assume that most of you have Ruby and node.js installed already. But if you are not so convinced, you can run the mruby unit tests in webruby environment:
 
 {% highlight bash %}
