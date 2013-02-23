@@ -1,34 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>three.js webgl - geometries - powered by webruby</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-				font-family: Monospace;
-				background-color: #000;
-				margin: 0px;
-				overflow: hidden;
-			}
-		</style>
-	</head>
-	<body>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-		<script src="js/three.min.js"></script>
+  <head>
+	<title>three.js webgl - geometries - powered by webruby</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+	  body {
+  	    font-family: Monospace;
+	    background-color: #000;
+	    margin: 0px;
+	    overflow: hidden;
+	  }
+	</style>
+    <!-- Google Analytic script -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-35905691-1']);
+      _gaq.push(['_trackPageview']);
 
-		<script src="js/Detector.js"></script>
-		<script src="js/stats.min.js"></script>
-        <script src="js/webruby.js"></script>
-		<script>
-          $(document).ready(function() {
-            var w = WEBRUBY();
-            $.ajax({
-              url: "ruby/app.rb"
-            }).done(function(data) {
-              w.run_source(data);
-            });
-          });
-		</script>
-	</body>
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+      })();
+    </script>
+
+  </head>
+  <body>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script src="js/three.min.js"></script>
+
+	<script src="js/Detector.js"></script>
+	<script src="js/stats.min.js"></script>
+    <script src="js/webruby.js"></script>
+	<script>
+      $(document).ready(function() {
+        var w = WEBRUBY();
+        $.ajax({
+          url: "ruby/app.rb"
+        }).done(function(data) {
+          w.run_source(data);
+        });
+      });
+	</script>
+  </body>
 </html>
