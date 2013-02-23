@@ -12,13 +12,24 @@ unless $window.Detector.webgl
   $window.Detector.addGetWebGLMessage[]
 end
 
+def onWindowResize
+  if $camera
+    $camera.aspect = $window.innerWidth / $window.innerHeight
+    $camera.updateProjectionMatrix
+  end
+
+  if $renderer
+    $renderer.setSize($window.innerWidth, $window.innerHeight)
+  end
+end
+
 def init
   $container = $document.createElement('div')
   $document.body.appendChild($container)
 
   $camera = $three.PerspectiveCamera.invoke_new(
       45, $window.innerWidth / $window.innerHeight, 1, 2000)
-  $camera.position["y"] = 400
+  $camera.position.y = 400
 
   $scene = $three.Scene.invoke_new
 
@@ -29,8 +40,8 @@ def init
   $scene.add(light)
 
   map = $three.ImageUtils.loadTexture("textures/ash_uvgrid01.jpg")
-  map["wrapS"] = map["wrapT"] = $three.RepeatWrapping
-  map["anisotropy"] = 16
+  map.wrapS = map.wrapT = $three.RepeatWrapping
+  map.anisotropy = 16
 
   materials = [$three.MeshLambertMaterial.invoke_new({ambient: 0xbbbbbb, map: map, side: $three.DoubleSide}),
                $three.MeshBasicMaterial.invoke_new({color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1, side: $three.DoubleSide})]
@@ -102,45 +113,36 @@ def init
   $container.appendChild($renderer.domElement)
 
   $stats = $window.Stats.invoke_new
-  $stats.domElement.style["position"] = 'absolute'
-  $stats.domElement.style["top"] = '0px'
+  $stats.domElement.style.position = 'absolute'
+  $stats.domElement.style.top = '0px'
   $container.appendChild( $stats.domElement )
 
-  $window.addEventListener('resize', lambda do
-                             if $camera
-                               $camera['aspect'] = $window.innerWidth / $window.innerHeight
-                               $camera.updateProjectionMatrix
-                             end
-
-                             if $renderer
-                               $renderer.setSize($window.innerWidth, $window.innerHeight)
-                             end
-                           end, false)
+  $window.addEventListener('resize', :onWindowResize.to_proc, false)
 end
 
 def do_render
   t = Time.now
   timer = t.sec * 0.1 + t.usec * 0.0000001
 
-  $camera.position['x'] = Math.cos(timer) * 800
-  $camera.position['z'] = Math.sin(timer) * 800
+  $camera.position.x = Math.cos(timer) * 800
+  $camera.position.z = Math.sin(timer) * 800
 
   $camera.lookAt( $scene.position )
 
   $scene.children.each do |object|
-    object.rotation['x'] = timer * 5
-    object.rotation['y'] = timer * 2.5
+    object.rotation.x = timer * 5
+    object.rotation.y = timer * 2.5
   end
 
   $renderer.render($scene, $camera)
 end
 
-$animate_proc = Proc.new do
-  $window.requestAnimationFrame($animate_proc)
+def animate
+  $window.requestAnimationFrame(:animate.to_proc)
 
   do_render
   $stats.update[]
 end
 
 init
-$animate_proc.call
+animate
