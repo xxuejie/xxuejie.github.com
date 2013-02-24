@@ -15,7 +15,7 @@ end
 def onWindowResize
   if $camera
     $camera.aspect = $window.innerWidth / $window.innerHeight
-    $camera.updateProjectionMatrix
+    $camera.updateProjectionMatrix[]
   end
 
   if $renderer
