@@ -18,19 +18,7 @@
   </style>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   <script src="events.js"></script>
-  <script src="mruby.js"></script>
-  <!-- Google Analytic script, this is not include in the git repository -->
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-35905691-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
-    })();
-  </script>
+  <script src="webruby.js"></script>
 </head>
 <body>
   <p>
@@ -39,7 +27,6 @@
   </p>
   <p>
     <ul>
-      <li><b>Update</b>: now is compiled using O2 optimization in emscripten, you can see from any developer tool that mruby.js is only 811k. Although I haven't done any profiling work, it seems the running speed is also increased! However, the new code may or may not contain bugs. Feel free to write to me if you found any bugs, I would be happy to fix them.</li>
       <li>The skeleton of this file is take from <a href="https://github.com/kripken/emscripten/blob/master/demos/lua.html">here</a>, a Lua interpreter running in a browser.</li>
       <li>The source code is at <a href="https://github.com/xxuejie/mruby-web-irb">https://github.com/xxuejie/mruby-web-irb</a>.</li>
       <li>Also feel free to check out my <a href="/">blog</a>!</li>
@@ -50,6 +37,8 @@
     <b>Enter some mruby code</b>:
     <a id="submit-button" href="#">Submit</a><br><br>
     <input id="clear-check" type="checkbox">Click this if you want to start a new irb(clear all current states) after submitting your code.</input>
+    <div></div>
+    <input id="clear-input" type="checkbox">Check this to clear editor after submitting.</input>
     <div id="editor-container">
       <div id="editor">5.times { puts "Ruby is awesome!" }</div>
     </div>
