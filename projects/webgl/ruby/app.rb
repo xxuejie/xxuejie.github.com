@@ -117,7 +117,7 @@ def init
   $stats.domElement.style.top = '0px'
   $container.appendChild( $stats.domElement )
 
-  $window.addEventListener('resize', :onWindowResize.to_proc(0), false)
+  $window.addEventListener('resize', :onWindowResize.to_js_proc(0), false)
 end
 
 def do_render
@@ -138,7 +138,7 @@ def do_render
 end
 
 def animate
-  $window.requestAnimationFrame(:animate.to_proc(0))
+  $window.requestAnimationFrame(:animate.to_js_proc(0))
 
   do_render
   $stats.update[]
