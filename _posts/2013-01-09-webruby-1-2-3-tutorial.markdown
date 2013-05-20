@@ -20,13 +20,13 @@ You can also find a live demo at [here](/projects/webruby-tutorial/). The demo p
 
 Before everything starts, we need a place to keep and load our Ruby source code. Webruby now supports 3 kinds of source code loading methods:
 
-* All the source code in `app` folder of Webruby will be compiled and attached in the `mruby.js` file automatically. Then we can use `WEBRUBY.run` to load this part of source code.
+* All the source code in `app` folder of Webruby will be compiled and attached in the `mruby.js` file automatically. Then we can use `WEBRUBY#run` to load this part of source code.
 
-* You can pre-compile the Ruby source code, pass the generated mruby bytecodes to the browser side either by attached JavaScript file or XMLHttpRequest, and use `WEBRUBY.run_bytecode` to execute the bytecode directly. With this method, you can get the flexibility of loading code on the fly, while avoiding parsing Ruby source code at the browser side(and the whole parsing part can be avoided in `mruby.js` file).
+* You can pre-compile the Ruby source code, pass the generated mruby bytecodes to the browser side either by attached JavaScript file or XMLHttpRequest, and use `WEBRUBY#run_bytecode` to execute the bytecode directly. With this method, you can get the flexibility of loading code on the fly, while avoiding parsing Ruby source code at the browser side(and the whole parsing part can be avoided in `mruby.js` file).
 
-* And of course, you can use `WEBRUBY.run_source` to parse and execute Ruby code directly.
+* And of course, you can use `WEBRUBY#run_source` to parse and execute Ruby code directly.
 
-Webruby allows you to specify the loading modes you will use when compiling, this can help reduce the size of `mruby.js` file: if you do not need to parse Ruby source code on the fly, you wouldn't need all the parsing code in the generated `mruby.js` file, and if you only execute source code from `app` folder, modern optimizers may take advantage of that to further reduce the file size. Please refer to `rakelib/functions.rb` for how to specify supported loading modes. In this tutorial, we will use the default loading modes, which will support all 3 kinds of loading methods. And we will show how to load Ruby source code using `WEBRUBY.run` and `WEBRUBY.run_source`. The second method describes above is a little bit of complicated(since mruby has multiple versions of bytecode), I will describe it in another post(maybe with specialized bytecode generation tools) later.
+Webruby allows you to specify the loading modes you will use when compiling, this can help reduce the size of `mruby.js` file: if you do not need to parse Ruby source code on the fly, you wouldn't need all the parsing code in the generated `mruby.js` file, and if you only execute source code from `app` folder, modern optimizers may take advantage of that to further reduce the file size. Please refer to `rakelib/functions.rb` for how to specify supported loading modes. In this tutorial, we will use the default loading modes, which will support all 3 kinds of loading methods. And we will show how to load Ruby source code using `WEBRUBY#run` and `WEBRUBY#run_source`. The second method describes above is a little bit of complicated(since mruby has multiple versions of bytecode), I will describe it in another post(maybe with specialized bytecode generation tools) later.
 
 ## Okay, I got that. But how to run this stuff exactly?
 
@@ -102,7 +102,7 @@ root_object = MrubyJs.get_root_object
 container = root_object.call("$", "#container")
 
 # appends <p> tag
-container.call("append", "<p>This is inserted in Webruby using WEBRUBY.run()!</p>")
+container.call("append", "<p>This is inserted in Webruby using WEBRUBY#run()!</p>")
 {% endhighlight %}
 
 There is only one method in module `MrubyJS`: `get_root_object`. It would return the `window` object for a browser environment, or the `global` object when running in node.js. The returned object is of class `JsObject`, it is a wrapper over the actual object at JavaScript side. With its `call` function, you can make a call to a JavaScript function, the first argument is the function name, while the rest arguments are all passed to the JavaScript function.
@@ -130,12 +130,12 @@ Here's a sample skeleton: note that this only serves as a sample, and I believe 
     <div id="container"></div>
     <script>
       $(document).ready(function() {
-        var mrb = WEBRUBY.open();
+        var mrb = WEBRUBY();
 
         /* Runs embedded source code in mruby.js file. */
-        WEBRUBY.run(mrb);
+        mrb.run();
 
-        WEBRUBY.close(mrb);
+        mrb.close();
       });
     </script>
   </body>
@@ -177,18 +177,18 @@ The Ruby code can thus be put in a JavaScript string, which may comes from other
        */
       var src = "MrubyJs.get_root_object.call('$', '#container')" +
         ".call('append', '<p>This is inserted in Webruby using " +
-        "WEBRUBY.run_source()!</p>')";
+        "WEBRUBY#run_source()!</p>')";
 
       $(document).ready(function() {
         var mrb = WEBRUBY.open();
 
         /* Runs embedded source code in mruby.js file. */
-        WEBRUBY.run(mrb);
+        mrb.run()
 
         /* Parses and executes Ruby code on the fly. */
-        WEBRUBY.run_source(mrb, src);
+        mrb.run_source(src);
 
-        WEBRUBY.close(mrb);
+        mrb.close();
       });
     </script>
   </body>
