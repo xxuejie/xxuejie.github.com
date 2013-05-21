@@ -123,7 +123,7 @@ Here's a sample skeleton: note that this only serves as a sample, and I believe 
   <head>
     <title>Webruby tutorial</title>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script src="mruby.js"></script>
+    <script src="webruby.js"></script>
   </head>
   <body>
     <h1>This is a skeleton for Webruby tutorial!</h1>
@@ -166,7 +166,7 @@ The Ruby code can thus be put in a JavaScript string, which may comes from other
   <head>
     <title>Webruby tutorial</title>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script src="mruby.js"></script>
+    <script src="webruby.js"></script>
   </head>
   <body>
     <h1>This is a skeleton for Webruby tutorial!</h1>
@@ -180,7 +180,7 @@ The Ruby code can thus be put in a JavaScript string, which may comes from other
         "WEBRUBY#run_source()!</p>')";
 
       $(document).ready(function() {
-        var mrb = WEBRUBY.open();
+        var mrb = WEBRUBY();
 
         /* Runs embedded source code in mruby.js file. */
         mrb.run()

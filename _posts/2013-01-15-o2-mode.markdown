@@ -33,7 +33,7 @@ There's also a small API changes from what I described in the [tutorial](/2013/0
   <head>
     <title>Webruby tutorial</title>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script src="mruby.js"></script>
+    <script src="webruby.js"></script>
   </head>
   <body>
     <h1>This is a skeleton for Webruby tutorial!</h1>

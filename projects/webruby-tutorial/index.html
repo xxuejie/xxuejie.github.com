@@ -3,7 +3,7 @@
   <head>
     <title>Webruby tutorial</title>
     <script src="../jquery/jquery-1.9.1.min.js"></script>
-    <script src="mruby.opt.js"></script>
+    <script src="webruby.js"></script>
     <!-- Google Analytic script, this is not include in the tutorial repository -->
     <script type="text/javascript">
       var _gaq = _gaq || [];
@@ -26,18 +26,18 @@
        */
       var src = "MrubyJs.get_root_object.call('$', '#container')" +
         ".call('append', '<p>This is inserted in Webruby using " +
-        "WEBRUBY.run_source()!</p>')";
+        "WEBRUBY#run_source()!</p>')";
 
       $(document).ready(function() {
-        var mrb = WEBRUBY.open();
+        var mrb = WEBRUBY();
 
         /* Runs embedded source code in mruby.js file. */
-        WEBRUBY.run(mrb);
+        mrb.run()
 
         /* Parses and executes Ruby code on the fly. */
-        WEBRUBY.run_source(mrb, src);
+        mrb.run_source(src);
 
-        WEBRUBY.close(mrb);
+        mrb.close();
       });
     </script>
   </body>
