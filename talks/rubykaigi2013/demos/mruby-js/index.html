@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Webruby</title>
+    <script src="jquery-1.9.1.min.js"></script>
+    <script src="webruby.js"></script>
+  </head>
+  <body>
+    <h1>This page executes Ruby code on-the-fly!</h1>
+    <div id="container"></div>
+    <script>
+      $(document).ready(function() {
+        var w = WEBRUBY();
+        $.ajax({
+          url: "example.rb"
+        }).done(function(data) {
+          w.run_source(data);
+        });
+      });
+    </script>
+  </body>
+</html>

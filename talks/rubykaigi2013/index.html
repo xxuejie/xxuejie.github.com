@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Webruby - RubyKaigi 2013 talk</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/custom.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/idea.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+        <!-- Google Analytic script -->
+        <script type="text/javascript">
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-35905691-1']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+          })();
+        </script>
+	</head>
+
+	<body>
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+				<section>
+				  <h1>Webruby</h1>
+				  <h3>Now you can write your favorite Ruby code for the browser!</h3>
+				  <p>
+					<small><a href="http://qiezi.me">Xuejie "Rafael" Xiao</a> / <a href="http://twitter.com/defmacro">@defmacro</a></small>
+				  </p>
+				</section>
+
+                <section>
+                  <h2>What is webruby?</h2>
+                  <ul>
+                    <li>Ruby implementation that runs in the browser</li>
+                    <li>Based on mruby</li>
+                    <li>Calling JavaScript directly from Ruby</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h2>Demos</h2>
+                  <p><b style="color: #f85"><a href="http://joshnuss.github.io/mruby-web-irb/">IRB(by Joshua Nussbaum)</a></b></p>
+                  <p><b style="color: #f85"><a href="demos/webgl/shader.html">WebGL</a></b></p>
+                </section>
+
+                <section>
+                  <h2>How webruby works?</h2>
+                </section>
+
+                <section>
+                  <h2>mruby</h2>
+                  <ul>
+                    <li>Matz's embeddable minimal implementation of Ruby language</li>
+                    <li>Written in C99</li>
+                    <li>Minimal, Embeddable, Modular, Configurable</li>
+                    <li>Targeting Mobile device/Robots/Digital appliances/Games</li>
+                  </ul>
+                  <p style="margin-top: 100px">
+                    <b style="color: #f85">What about the Web?</b>
+                  </p>
+                </section>
+
+                <section>
+                  <h2>emscripten</h2>
+                  <ul>
+                    <li>LLVM-to-JavaScript compiler</li>
+                    <li>Generated JS code runs very fast, and gets faster every day</li>
+                    <li><b>asm.js</b>: subset of JavaScript used as low-level, efficient compiler target</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h2>Combine them together</h2>
+                  <img width="900" height="322" src="images/flow.png">
+                </section>
+
+                <section>
+                  <h2>mruby source</h2>
+                  <img width="920" height="386" src="images/hello_src.png">
+                </section>
+
+                <section>
+                  <h2>Running with node.js</h2>
+                  <img width="920" height="386" src="images/run_src.png">
+                </section>
+
+                <section>
+                  <h2>Loading mode</h2>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>run()</td>
+                        <td>load bytecode packed in generated JS file</td>
+                      </tr>
+                      <tr>
+                        <td>run_bytecode(bytecode)</td>
+                        <td>load bytecode</td>
+                      </tr>
+                      <tr>
+                        <td>run_source(src)</td>
+                        <td>parse and load Ruby source code on-the-fly</td>
+                      </tr>
+                  </table>
+
+                  <p style="margin-top: 100px">
+                    <b style="color: #f85">
+                      If we do not need run_source(src), we may be able to get rid of all the parsing code!
+                    </b>
+                  </p>
+                </section>
+
+                <section>
+                  <h2>Load source on-the-fly</h2>
+                  <pre><code class="javascript" data-trim>
+$(document).ready(function() {
+  var src = "5.times { puts 'Ruby is awesome!' }";
+  var w = WEBRUBY();
+
+  w.run_source(src);
+  w.close();
+});
+                  </code></pre>
+                </section>
+
+                <section>
+                  <h2>Running in the browser</h2>
+                  <img width="870" height="418" src="images/load_result.png">
+                </section>
+
+                <section>
+                  <h2>mruby test cases</h2>
+                  <img width="920" height="386" src="images/mrbtest.png">
+                  <p style="margin-top: 50px">
+                    <b style="color: #f85">Actually it may not be that slow because of JIT!</b>
+                  </p>
+                </section>
+
+                <section>
+                  <h4>Okay, I can run Ruby in the browser.</h4>
+                  <h4>But how can I access DOM/my fancy JavaScript library?</h4>
+                </section>
+
+                <section>
+                  <h2>mruby-js</h2>
+                  <ul>
+                    <li>Grouped as a mruby gem</li>
+                    <li>DOM access</li>
+                    <li>Type conversion between Ruby and JavaScript</li>
+                    <li>JavaScript method invoking</li>
+                    <li>Callback handling(JavaScript functions and Ruby procs)</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h2>Example to use</h2>
+                  <pre><code class="ruby" data-trim>
+# gets window object
+window = MrubyJs.window
+
+# gets jQuery selected object, this is a function call!
+# you can also use jQuery.invoke("#container")
+container = window.jQuery["#container"]
+
+# appends new tag
+# another way of writing this: container.append["content"]
+container.append("<p>This is inserted using run_source()!</p>")
+                  </code></pre>
+                  <a href="demos/mruby-js/index.html">Demo</a>
+                </section>
+
+                <section>
+                  <h2>DOM access</h2>
+                  <p style="margin-top: 50px">
+                    <b style="color: #f85">
+                      DOM is a tree!
+                    </b>
+                  </p>
+                  <img width="900" height="368" src="images/dom_access.png">
+                </section>
+
+                <section>
+                  <h2>Type conversion</h2>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Ruby type</th>
+                        <th>Direction</th>
+                        <th>JavaScript type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>42</td>
+                        <td>&#8592;&#8594;</td>
+                        <td>42</td>
+                      </tr>
+                      <tr>
+                        <td>3.14</td>
+                        <td>&#8592;&#8594;</td>
+                        <td>3.14</td>
+                      </tr>
+                      <tr>
+                        <td>true</td>
+                        <td>&#8592;&#8594;</td>
+                        <td>true</td>
+                      </tr>
+                      <tr>
+                        <td>nil</td>
+                        <td>&#8592;&#8594;</td>
+                        <td>undefined</td>
+                      </tr>
+                      <tr>
+                        <td>"String"</td>
+                        <td>&#8592;&#8594;</td>
+                        <td>"String"</td>
+                      </tr>
+                      <tr>
+                        <td>:symbol</td>
+                        <td>&#8594;</td>
+                        <td>"symbol"</td>
+                      </tr>
+                      <tr>
+                        <td>Proc.new { ... }</td>
+                        <td>&#8594;</td>
+                        <td>function() { ... }</td>
+                      </tr>
+                      <tr>
+                        <td>[ ... ]</td>
+                        <td>&#8594;</td>
+                        <td>[ ... ]</td>
+                      </tr>
+                      <tr>
+                        <td>{ ... }</td>
+                        <td>&#8594;</td>
+                        <td>{ ... }</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+
+                <section>
+                  <h2>Object encapsulation</h2>
+                  <img width="870" height="500" src="images/object.png">
+                </section>
+
+                <section>
+                  <h2>Method calling</h2>
+                  <img width="900" height="418" src="images/call.png">
+                </section>
+
+                <section>
+                  <h2>Wrap using <b>instance_eval</b></h2>
+                  <pre><code class="ruby" data-trim>
+MrubyJs.window.instance_eval do
+ if confirm("continue?")
+    console.log "you chose continue"
+    food = prompt("What's your favourite food?")
+    alert "Really?? #{food}?\nThat's gross."
+    jQuery('body').prepend("<h1>Likes #{food}</h1>")
+ else
+    console.log "you chose not to coninue"
+ end
+end
+                  </code></pre>
+                </section>
+
+                <section>
+                  <h2>mruby-js limitations</h2>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>JavaScript</th>
+                        <th>Ruby</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>foo.bar()</td>
+                        <td>foo.bar.invoke <b style="color: #f85">or</b> foo.bar[]</td>
+                      </tr>
+                      <tr>
+                        <td>new bar("foo")</td>
+                        <td>bar.invoke_new("foo")</td>
+                      </tr>
+                      <tr>
+                        <td>var a = bar; a(2);</td>
+                        <td>a = window.bar; a[2]</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+
+                <section>
+                  <h2>When should I use webruby?</h2>
+                </section>
+
+                <section>
+                  <h2>Drawbacks</h2>
+                  <ul>
+                    <li>Giant webruby.js file
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Version</th>
+                            <th>Raw</th>
+                            <th>gzip -1</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>non-asm.js</td>
+                            <td>3.2M</td>
+                            <td>691K</td>
+                          </tr>
+                          <tr>
+                            <td>asm.js</td>
+                            <td>2.2M</td>
+                            <td>661K</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </li>
+                    <li>Slow startup time</li>
+                    <li>Double GC(maybe asm.js can help with this?)</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h2>Places webruby might fit</h2>
+                  <ul>
+                    <li>
+                      Cross-platform games
+                      <ul>
+                        <li>Common game logic in Ruby</li>
+                        <li>Web, iOS, Android, PlayStation...</li>
+                        <li>OpenGL ES 2 as rendering API</li>
+                      </ul>
+                    </li>
+                    <li>
+                      Web apps
+                      <ul>
+                        <li>Business logic in Ruby</li>
+                        <li>Interactions with jQuery, three.js, Backbone.js, Meteor...</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h2>Thank you!</h2>
+                  <h2 style="margin-bottom: 100px;">Questions?</h2>
+                  <ul>
+                    <li>Webruby: <a href="https://github.com/xxuejie/webruby">https://github.com/xxuejie/webruby</a></li>
+                  </ul>
+                </section>
+			</div>
+
+		</div>
+
+        <a href="https://github.com/xxuejie/rubykaigi2013-talk"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme || 'rubykaigi', // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'fade', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

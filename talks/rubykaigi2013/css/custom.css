@@ -1,0 +1,29 @@
+.reveal table th,
+.reveal table td {
+  padding-left: 1em;
+}
+
+.reveal table th:first-child,
+.reveal table td:first-child {
+  padding-left: 0;
+}
+
+.reveal table {
+  margin: 0 auto;
+}
+
+.reveal table thead th {
+  padding-bottom: .8em;
+}
+
+.reveal table tbody td {
+  padding-bottom: .3em;
+}
+
+.reveal section img {
+  border: 0px !important;
+}
+
+.reveal warning {
+  color: rgb(85, 99, 255);
+}
