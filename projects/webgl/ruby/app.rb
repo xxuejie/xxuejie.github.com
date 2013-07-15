@@ -138,7 +138,7 @@ def do_render
 end
 
 def animate
-  $window.requestAnimationFrame(:animate.to_js_proc(0))
+  $window.requestAnimationFrame(:animate.to_js_proc($window, 0))
 
   do_render
   $stats.update[]
