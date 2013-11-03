@@ -117,7 +117,7 @@ def init
   $stats.domElement.style.top = '0px'
   $container.appendChild( $stats.domElement )
 
-  $window.addEventListener('resize', :onWindowResize.to_js_proc(0), false)
+  $window.addEventListener('resize', :onWindowResize.to_js_proc($window, 0), false)
 end
 
 def do_render
